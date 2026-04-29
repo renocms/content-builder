@@ -1,0 +1,34 @@
+{
+    "name": "renocms/content-builder",
+    "description": "Content Builder package for Reno CMS",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Reno CMS Team",
+            "email": "contacts@renocms.ru"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "laravel/framework": "^12.0",
+        "renocms/cms": "@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Reno\\ContentBuilder\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Reno\\ContentBuilder\\ContentBuilderServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

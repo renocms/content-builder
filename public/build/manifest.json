@@ -1,0 +1,8 @@
+{
+  "resources/js/components/ContentBuilderEditor.vue": {
+    "file": "components/ContentBuilderEditor.js",
+    "name": "components/ContentBuilderEditor",
+    "src": "resources/js/components/ContentBuilderEditor.vue",
+    "isEntry": true
+  }
+}
