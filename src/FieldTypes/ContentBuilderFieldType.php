@@ -28,7 +28,7 @@ class ContentBuilderFieldType implements FieldTypeInterface, SyncsResourceValueI
 
     public function getJsModule(): string
     {
-        return '/vendor/reno/content-builder/build/components/ContentBuilderEditor.js';
+        return '/js/reno/content-builder/build/components/ContentBuilderEditor.js';
     }
 
     public function getValidationRules(): array

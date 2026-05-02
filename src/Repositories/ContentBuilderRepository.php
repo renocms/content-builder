@@ -115,7 +115,7 @@ class ContentBuilderRepository implements ContentBuilderRepositoryInterface
             return;
         }
 
-        $lock = Cache::lock(self::CACHE_LOCK);
+        $lock = Cache::lock(self::CACHE_LOCK, 30);
 
         if (!$lock->block(5)) {
             throw new \RuntimeException('Content builders are being locked');

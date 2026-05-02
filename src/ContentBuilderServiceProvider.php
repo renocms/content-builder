@@ -7,12 +7,14 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Reno\Cms\Events\AdminApiRoutesRegistering;
 use Reno\Cms\Events\FieldTypesRegistering;
+use Reno\Cms\Events\Resources\ResourcesReindexing;
 use Reno\ContentBuilder\Services\ContentBuilderSyncService;
 use Reno\ContentBuilder\FieldTypes\ContentBuilderFieldType;
 use Reno\ContentBuilder\Repositories\ContentBlockRepository;
 use Reno\ContentBuilder\Http\Controllers\ContentBuilderController;
 use Reno\ContentBuilder\Interfaces\ContentBlockRepositoryInterface;
 use Reno\ContentBuilder\Interfaces\ContentBuilderRepositoryInterface;
+use Reno\ContentBuilder\Listeners\AddContentBuilderDataToSearch;
 use Reno\ContentBuilder\Repositories\ContentBuilderRepository;
 
 class ContentBuilderServiceProvider extends ServiceProvider
@@ -30,6 +32,8 @@ class ContentBuilderServiceProvider extends ServiceProvider
         Event::listen(AdminApiRoutesRegistering::class, function (AdminApiRoutesRegistering $event) {
             Route::get('/content-builder', [ContentBuilderController::class, 'index']);
         });
+
+        Event::listen(ResourcesReindexing::class, AddContentBuilderDataToSearch::class);
     }
 
     public function boot(): void
@@ -41,7 +45,7 @@ class ContentBuilderServiceProvider extends ServiceProvider
         ], 'content-builder-migrations');
 
         $this->publishes([
-            __DIR__ . '/../public/build' => public_path('vendor/reno/content-builder/build'),
+            __DIR__ . '/../public/build' => public_path('js/reno/content-builder/build'),
         ], 'cms-assets');
     }
 }
