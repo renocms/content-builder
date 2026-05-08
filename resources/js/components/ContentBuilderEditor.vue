@@ -8,7 +8,12 @@
             </div>
 
             <div class="content-builder-actions">
-                <select v-model="selectedBlockId" class="form-control">
+                <select
+                    v-model="selectedBlockId"
+                    class="form-control"
+                    @change="handleBlockSelection"
+                    title="$t('content_builder_add_block')"
+                >
                     <option value="">
                         {{ $t('content_builder_select_block') }}
                     </option>
@@ -21,14 +26,6 @@
                     </option>
                 </select>
 
-                <button
-                    type="button"
-                    class="btn btn-primary"
-                    :disabled="!selectedBlockId"
-                    @click="addBlock"
-                >
-                    {{ $t('content_builder_add_block') }}
-                </button>
             </div>
         </div>
 
@@ -73,7 +70,7 @@
                     </div>
                 </div>
 
-                <div class="content-builder-item-actions">
+                <div class="item-actions">
                     <span @click="editBlock(block.local_uid)">
                         <Icon name="pencil" :size="16" />
                     </span>
@@ -199,8 +196,8 @@ export default {
             editingBlock: null,
             error: null,
             blocks: [],
-            builderId: null,
             fetchingNow: false,
+            blocksLoaded: false,
             mediaPreviewById: {},
         };
     },
@@ -216,16 +213,11 @@ export default {
             immediate: true,
             deep: true,
             async handler(value) {
-                if (parseInt(value)) {
-                    value = {
-                        builder_id: value
-                    }
-                    this.syncFromModelValue(value);
-                    this.emitValue();
-                } else if (value === null || value === '') {
+                if (parseInt(value) || value === null || value === '') {
                     value = {
                         builder_id: this.configuration.builder_id
                     }
+                    this.blocksLoaded = false;
                     this.syncFromModelValue(value);
                     this.emitValue();
                 } else {
@@ -249,8 +241,14 @@ export default {
         window.removeEventListener('keydown', this.handleEditorEscape);
     },
     methods: {
+        handleBlockSelection() {
+            if (!this.selectedBlockId) {
+                return;
+            }
+
+            this.addBlock();
+        },
         syncFromModelValue(value) {
-            this.builderId = value.builder_id;
             this.blocks = (value.blocks || []).map((block, index) => this.normalizeBlock(block, index));
             this.preloadSummaryMedia(this.blocks);
         },
@@ -258,9 +256,10 @@ export default {
             return Boolean(
                 this.resourceId
                 && this.resourceFieldId
-                && this.builderId
+                && this.configuration.builder_id
                 && this.blocks.length === 0
                 && !this.fetchingNow
+                && !this.blocksLoaded
             );
         },
         normalizeBlock(block, index) {
@@ -291,7 +290,9 @@ export default {
                 });
 
                 this.blocks = (Array.isArray(response.data?.data) ? response.data.data : []).map((block, index) => this.normalizeBlock(block, index));
+                this.blocksLoaded = true;
                 this.preloadSummaryMedia(this.blocks);
+                this.emitValue();
             } catch (error) {
                 console.error('Error loading content builder blocks:', error);
             }
@@ -311,7 +312,7 @@ export default {
             }, this.blocks.length);
 
             this.blocks.push(block);
-            this.selectedBlockId = null;
+            this.selectedBlockId = '';
             this.openEditor(block.local_uid);
             this.emitValue();
         },
@@ -414,7 +415,7 @@ export default {
         },
         emitValue() {
             this.$emit('update:modelValue', {
-                builder_id: this.builderId,
+                builder_id: this.configuration.builder_id,
                 blocks: this.blocks.map((block) => ({
                     id: block.id,
                     block_id: block.block_id,
@@ -670,8 +671,7 @@ export default {
     margin-top: 0;
 }
 
-.content-builder-actions,
-.content-builder-item-actions {
+.content-builder-actions {
     display: flex;
     gap: 0.5rem;
 }

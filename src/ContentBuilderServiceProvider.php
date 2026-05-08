@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Reno\Cms\Events\AdminApiRoutesRegistering;
 use Reno\Cms\Events\FieldTypesRegistering;
+use Reno\Cms\Events\JsTranslationFilesRegistering;
 use Reno\Cms\Events\Resources\ResourcesReindexing;
 use Reno\ContentBuilder\Services\ContentBuilderSyncService;
 use Reno\ContentBuilder\FieldTypes\ContentBuilderFieldType;
@@ -34,11 +35,16 @@ class ContentBuilderServiceProvider extends ServiceProvider
         });
 
         Event::listen(ResourcesReindexing::class, AddContentBuilderDataToSearch::class);
+
+        Event::listen(JsTranslationFilesRegistering::class, function (JsTranslationFilesRegistering $event): void {
+            $event->addFile(__DIR__ . '/../resources/lang/' . $event->getLocale() . '/content-builder.php');
+        });
     }
 
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'content-builder');
 
         $this->publishes([
             __DIR__ . '/../database/migrations' => database_path('migrations'),

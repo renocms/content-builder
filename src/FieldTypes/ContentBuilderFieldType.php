@@ -23,7 +23,7 @@ class ContentBuilderFieldType implements FieldTypeInterface, SyncsResourceValueI
 
     public function getDescription(): ?string
     {
-        return __('cms::cms.field_type_content_builder_description');
+        return __('content-builder::content-builder.field_type_content_builder_description');
     }
 
     public function getJsModule(): string
