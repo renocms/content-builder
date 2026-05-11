@@ -12,7 +12,7 @@
                     v-model="selectedBlockId"
                     class="form-control"
                     @change="handleBlockSelection"
-                    title="$t('content_builder_add_block')"
+                    :title="$t('content_builder_add_block')"
                 >
                     <option value="">
                         {{ $t('content_builder_select_block') }}
